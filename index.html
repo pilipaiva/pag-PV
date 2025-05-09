@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Pantallas que dejan huella</title>
+  <style>
+    body {
+      background-color: #0d1b2a;
+      color: white;
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      padding-top: 40px;
+      font-size: 2em;
+    }
+
+    #visual {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 30px;
+    }
+
+    #sidebar {
+      display: flex;
+      flex-direction: column;
+      margin-right: 10px;
+    }
+
+    #sidebar button {
+      margin: 5px;
+      padding: 8px;
+      background-color: #ccc;
+      border: none;
+      cursor: pointer;
+    }
+
+    canvas {
+      background-color: #1b263b;
+      border: 2px solid #ccc;
+    }
+
+    #explicacion {
+      margin: 40px auto;
+      width: 80%;
+      font-size: 1em;
+      text-align: left;
+    }
+
+    button.activo {
+      background-color: #e63946;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Pantallas que dejan huella</h1>
+  <button onclick="scrollToVisual()">Haz clic para partir ↓</button>
+
+  <div id="visual">
+    <div id="sidebar">
+      <button onclick="filtrar('todos')" class="activo">Todos</button>
+      <button onclick="filtrar('facebook')">FB</button>
+      <button onclick="filtrar('instagram')">IG</button>
+      <button onclick="filtrar('tiktok')">TikTok</button>
+    </div>
+    <canvas id="pelotitasCanvas" width="600" height="400"></canvas>
+  </div>
+
+  <section id="explicacion">
+    <h2>¿Qué estás viendo?</h2>
+    <p>Cada círculo representa una persona. El tamaño indica cuánto tiempo pasan en redes sociales. El color muestra qué red usan más. La transparencia sugiere su nivel de bienestar emocional: más transparente = peor estado.</p>
+  </section>
+
+  <script>
+    const canvas = document.getElementById('pelotitasCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const pelotitas = [];
+
+    // Crear datos de ejemplo
+    const redes = ['facebook', 'instagram', 'tiktok'];
+    for (let i = 0; i < 100; i++) {
+      pelotitas.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: 5 + Math.random() * 15, // tamaño = tiempo en redes
+        red: redes[Math.floor(Math.random() * redes.length)],
+        opacidad: 0.2 + Math.random() * 0.8 // bienestar
+      });
+    }
+
+    const colores = {
+      facebook: '#1877f2',
+      instagram: '#e1306c',
+      tiktok: '#25f4ee'
+    };
+
+    function dibujar(filtro = 'todos') {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pelotitas.forEach(p => {
+        if (filtro === 'todos' || p.red === filtro) {
+          ctx.beginPath();
+          ctx.globalAlpha = p.opacidad;
+          ctx.fillStyle = colores[p.red];
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        }
+      });
+    }
+
+    function filtrar(red) {
+      document.querySelectorAll("#sidebar button").forEach(b => b.classList.remove("activo"));
+      event.target.classList.add("activo");
+      dibujar(red);
+    }
+
+    function scrollToVisual() {
+      document.getElementById('visual').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    dibujar(); // dibuja al cargar
+  </script>
+</body>
+</html>
